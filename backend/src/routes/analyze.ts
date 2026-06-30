@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express";
 import { StoryInputSchema } from "../schemas";
-import { runMockPipeline } from "../pipeline";
+import { runMockPipeline, runPipeline } from "../pipeline";
 
 const router = Router();
 
@@ -20,8 +20,11 @@ router.post("/analyze", async (req: Request, res: Response) => {
     res.write(`data: ${JSON.stringify({ type, data })}\n\n`);
   };
 
-  const delayMs = process.env.NODE_ENV === "test" ? 0 : 300;
-  await runMockPipeline(parse.data, emit, delayMs);
+  if (process.env.USE_MOCK_PIPELINE === "true") {
+    await runMockPipeline(parse.data, emit, 300);
+  } else {
+    await runPipeline(parse.data, emit);
+  }
 
   res.end();
 });
