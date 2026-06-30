@@ -1,122 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useAnalysis } from "./hooks/useAnalysis";
+import { StoryInput } from "./components/StoryInput";
+import { PipelineProgress } from "./components/PipelineProgress";
+import { FindingCard } from "./components/FindingCard";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const { status, stages, report, error, analyze } = useAnalysis();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+      <div className="mx-auto max-w-3xl px-6 py-12 flex flex-col gap-10">
 
-      <div className="ticks"></div>
+        <header>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">Trace</h1>
+          <p className="text-sm text-zinc-500 mt-1">Trust nothing. Follow the evidence.</p>
+        </header>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <StoryInput onSubmit={analyze} status={status} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        {stages.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <h2 className="text-xs font-medium uppercase tracking-widest text-zinc-500">Pipeline</h2>
+            <PipelineProgress stages={stages} />
+          </section>
+        )}
+
+        {error && (
+          <div className="rounded-md border border-red-800 bg-red-950 px-4 py-3 text-sm text-red-300">
+            {error}
+          </div>
+        )}
+
+        {report && (
+          <section className="flex flex-col gap-4">
+            <header className="flex items-baseline justify-between">
+              <h2 className="text-xs font-medium uppercase tracking-widest text-zinc-500">Findings</h2>
+              <div className="flex gap-3 text-xs text-zinc-500">
+                <span>{report.summary.totalFindings} total</span>
+                {report.summary.criticalCount > 0 && (
+                  <span className="text-red-400">{report.summary.criticalCount} critical</span>
+                )}
+                {report.summary.insufficientEvidenceCount > 0 && (
+                  <span className="text-zinc-500">{report.summary.insufficientEvidenceCount} insufficient evidence</span>
+                )}
+              </div>
+            </header>
+
+            <ul className="flex flex-col gap-3">
+              {report.findings.map((finding) => (
+                <li key={finding.id}>
+                  <FindingCard finding={finding} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+      </div>
+    </div>
+  );
 }
-
-export default App
