@@ -21,20 +21,33 @@ export function StoryInput({ onSubmit, status }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <textarea
-        value={raw}
-        onChange={(e) => setRaw(e.target.value)}
-        placeholder="Paste your Jira story here..."
-        rows={10}
-        className="w-full rounded-md border border-zinc-700 bg-zinc-900 p-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 resize-none"
-      />
-      <button
-        type="submit"
-        disabled={isEmpty || isRunning}
-        className="self-end rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-900 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-white transition-colors"
-      >
-        {isRunning ? "Analyzing..." : "Analyze"}
-      </button>
+      <div className="relative">
+        <textarea
+          value={raw}
+          onChange={(e) => setRaw(e.target.value)}
+          placeholder="Paste your Jira story here — title, description, acceptance criteria..."
+          rows={10}
+          disabled={isRunning}
+          className="w-full rounded-md border border-zinc-800 bg-zinc-900 p-4 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-zinc-600 resize-none disabled:opacity-50 transition-colors leading-relaxed"
+        />
+        {raw.length > 0 && (
+          <span className="absolute bottom-3 right-3 text-xs text-zinc-600">
+            {raw.length} chars
+          </span>
+        )}
+      </div>
+      <div className="flex items-center justify-end gap-3">
+        {status === "done" && (
+          <span className="text-xs text-zinc-500">Analysis complete — edit the story to run again</span>
+        )}
+        <button
+          type="submit"
+          disabled={isEmpty || isRunning}
+          className="rounded-md bg-zinc-100 px-5 py-2 text-sm font-medium text-zinc-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-white transition-colors"
+        >
+          {isRunning ? "Analyzing..." : "Analyze"}
+        </button>
+      </div>
     </form>
   );
 }
