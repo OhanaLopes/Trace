@@ -35,7 +35,7 @@ The frontend never communicates directly with the LLM.
 
 ### 1.1 Tech stack
 
-- **Frontend:** Next.js · TypeScript · TailwindCSS · shadcn/ui · SSE for real-time pipeline progress.
+- **Frontend:** Vite · React · TypeScript · TailwindCSS · shadcn/ui · SSE for real-time pipeline progress.
 - **Backend:** Node.js · Express · TypeScript.
 - **LLM:** `claude-sonnet-4-6` via the official `@anthropic-ai/sdk`. Structured outputs enforced via `claude-sonnet-4-6`'s tool use / JSON mode. All calls validated with Zod.
 - **State:** In-memory per-request. No database.
